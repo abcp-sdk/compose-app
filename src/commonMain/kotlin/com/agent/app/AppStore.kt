@@ -42,13 +42,15 @@ class AppStore(private val port: AgentPort, private val scope: CoroutineScope) {
     private fun launchStream(id: String) {
         scope.launch {
             port.watchSession(id).collect { ev ->
-                when (ev.event) {
-                    "text-delta" -> appendDelta(ev.params["id"].toString(), ev.params["text"].toString(), false)
-                    "reasoning-delta" -> appendDelta(ev.params["id"].toString(), ev.params["text"].toString(), true)
-                    "tool-call" -> {}
-                    "turn-complete" -> finishStream()
-                    "status" -> if (ev.params["type"] == "busy") sending = true else finishStream()
-                    "error" -> finishStream()
+                when (val e = toAgentEvent(ev)) {
+                    is AgentEvent.TextDelta -> appendDelta(e.id, e.text, false)
+                    is AgentEvent.ReasoningDelta -> appendDelta(e.id, e.text, true)
+                    is AgentEvent.ToolCall -> {}
+                    is AgentEvent.ToolResult -> {}
+                    is AgentEvent.ToolError -> {}
+                    AgentEvent.TurnComplete -> finishStream()
+                    is AgentEvent.Status -> if (e.type == "busy") sending = true else finishStream()
+                    is AgentEvent.Error -> finishStream()
                 }
             }
         }

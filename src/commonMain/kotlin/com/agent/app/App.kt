@@ -30,6 +30,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.agent.agent_compose_app.generated.resources.Res
+import com.agent.agent_compose_app.generated.resources.appName
+import com.agent.agent_compose_app.generated.resources.compact
+import com.agent.agent_compose_app.generated.resources.delete
+import com.agent.agent_compose_app.generated.resources.error
+import com.agent.agent_compose_app.generated.resources.interrupt
+import com.agent.agent_compose_app.generated.resources.loading
+import com.agent.agent_compose_app.generated.resources.messagePlaceholder
+import com.agent.agent_compose_app.generated.resources.model
+import com.agent.agent_compose_app.generated.resources.newSession
+import com.agent.agent_compose_app.generated.resources.noMessages
+import com.agent.agent_compose_app.generated.resources.noSessions
+import com.agent.agent_compose_app.generated.resources.preset
+import com.agent.agent_compose_app.generated.resources.rename
+import com.agent.agent_compose_app.generated.resources.send
+import com.agent.agent_compose_app.generated.resources.sessions
+import com.agent.agent_compose_app.generated.resources.stop
+import com.agent.agent_compose_app.generated.resources.thinking
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SessionList(
@@ -41,7 +60,7 @@ fun SessionList(
     onDelete: (String) -> Unit,
 ) {
     Column(Modifier.fillMaxSize().padding(8.dp)) {
-        Button(onClick = onCreate, Modifier.fillMaxWidth()) { Text("+ New session") }
+        Button(onClick = onCreate, Modifier.fillMaxWidth()) { Text("+ " + stringResource(Res.string.newSession)) }
         Spacer(Modifier.height(8.dp))
         LazyColumn {
             items(sessions) { s ->
@@ -81,11 +100,11 @@ fun ChatPane(
                 onValueChange = { input = it },
                 modifier = Modifier.weight(1f),
                 singleLine = true,
-                placeholder = { Text("Message") },
+                placeholder = { Text(stringResource(Res.string.messagePlaceholder)) },
             )
             Spacer(Modifier.width(8.dp))
             Button(enabled = !sending, onClick = { onSend(input.text); input = TextFieldValue("") }) {
-                Text("Send")
+                Text(stringResource(Res.string.send))
             }
         }
     }

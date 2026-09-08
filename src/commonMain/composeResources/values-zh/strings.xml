@@ -1,0 +1,24 @@
+<resources>
+  <string name="appName">Agent</string>
+  <string name="sessions">会话</string>
+  <string name="newSession">新会话</string>
+  <string name="noSessions">暂无会话</string>
+  <string name="rename">重命名</string>
+  <string name="delete">删除</string>
+  <string name="model">模型</string>
+  <string name="preset">预设</string>
+  <string name="stop">停止</string>
+  <string name="compact">压缩</string>
+  <string name="theme">主题</string>
+  <string name="themeSystem">跟随系统</string>
+  <string name="themeLight">浅色</string>
+  <string name="themeDark">深色</string>
+  <string name="send">发送</string>
+  <string name="messagePlaceholder">输入消息…</string>
+  <string name="loading">加载中…</string>
+  <string name="noMessages">暂无消息，发送一条开始对话。</string>
+  <string name="selectOrCreate">选择一个会话或创建一个新的</string>
+  <string name="thinking">思考中…</string>
+  <string name="interrupt">中断</string>
+  <string name="error">出错了</string>
+</resources>
