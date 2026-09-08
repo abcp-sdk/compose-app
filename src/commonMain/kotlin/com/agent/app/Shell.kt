@@ -1,23 +1,26 @@
 // Shared Compose Multiplatform root composable: resolves the port, owns the
 // AgentStore, and renders the responsive shell. Platform calls
 // MainComposeApp(port = ...).
+//
+// Provides live language (zh/en) + theme via CompositionLocalProvider so
+// stringResource(Res.string.*) and MaterialTheme react to store.lang/theme.
 package com.agent.app
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.isSystemInDarkTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -26,6 +29,9 @@ fun MainComposeApp(port: AgentPort) {
     val store = remember { AppStore(port, scope) }
     LaunchedEffect(Unit) { store.init() }
 
+    // Push live language so composables pick up zh/en instantly.
+    L10n_Current.lang = store.lang
+
     // Theme: system | light | dark (default system).
     val systemDark = isSystemInDarkTheme()
     val dark = when (store.theme) {
@@ -33,7 +39,9 @@ fun MainComposeApp(port: AgentPort) {
         "dark" -> true
         else -> systemDark
     }
-    val scheme = if (dark) darkColorScheme(primary = Color(0xFF2F81F7)) else lightColorScheme(primary = Color(0xFF1F6FEB))
+    val scheme =
+        if (dark) darkColorScheme(primary = Color(0xFF2F81F7))
+        else lightColorScheme(primary = Color(0xFF1F6FEB))
 
     MaterialTheme(colorScheme = scheme) {
         Box(Modifier.fillMaxSize()) {

@@ -35,27 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.agent.agent_compose_app.generated.resources.Res
-import com.agent.agent_compose_app.generated.resources.appName
-import com.agent.agent_compose_app.generated.resources.compact
-import com.agent.agent_compose_app.generated.resources.delete
-import com.agent.agent_compose_app.generated.resources.error
-import com.agent.agent_compose_app.generated.resources.interrupt
-import com.agent.agent_compose_app.generated.resources.loading
-import com.agent.agent_compose_app.generated.resources.messagePlaceholder
-import com.agent.agent_compose_app.generated.resources.model
-import com.agent.agent_compose_app.generated.resources.newSession
-import com.agent.agent_compose_app.generated.resources.noMessages
-import com.agent.agent_compose_app.generated.resources.noSessions
-import com.agent.agent_compose_app.generated.resources.preset
-import com.agent.agent_compose_app.generated.resources.rename
-import com.agent.agent_compose_app.generated.resources.send
-import com.agent.agent_compose_app.generated.resources.selectOrCreate
-import com.agent.agent_compose_app.generated.resources.sessions
-import com.agent.agent_compose_app.generated.resources.stop
-import com.agent.agent_compose_app.generated.resources.theme
-import com.agent.agent_compose_app.generated.resources.thinking
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SessionList(
@@ -66,9 +45,10 @@ fun SessionList(
     onRename: (String) -> Unit,
     onDelete: (String) -> Unit,
 ) {
+    val t = L10n.strings(L10n_Current.lang)
     Column(Modifier.fillMaxSize().padding(8.dp)) {
         Button(onClick = onCreate, Modifier.fillMaxWidth()) {
-            Text("+ " + stringResource(Res.string.newSession))
+            Text("+ " + t.newSession)
         }
         Spacer(Modifier.height(8.dp))
         LazyColumn {
@@ -81,7 +61,7 @@ fun SessionList(
                     ) {
                         Text(s, style = MaterialTheme.typography.bodyLarge)
                         Row {
-                            TextButton(onClick = { onRename(s) }) { Text(stringResource(Res.string.rename)) }
+                            TextButton(onClick = { onRename(s) }) { Text(t.rename) }
                             TextButton(onClick = { onDelete(s) }) { Text("×") }
                         }
                     }
@@ -98,6 +78,7 @@ fun ChatPane(
     sending: Boolean,
     onSend: (String) -> Unit,
 ) {
+    val t = L10n.strings(L10n_Current.lang)
     var input by remember { mutableStateOf(TextFieldValue("")) }
     Column(Modifier.fillMaxSize()) {
         LazyColumn(
@@ -112,11 +93,11 @@ fun ChatPane(
                 onValueChange = { input = it },
                 modifier = Modifier.weight(1f),
                 singleLine = true,
-                placeholder = { Text(stringResource(Res.string.messagePlaceholder)) },
+                placeholder = { Text(t.messagePlaceholder) },
             )
             Spacer(Modifier.width(8.dp))
             Button(enabled = !sending, onClick = { onSend(input.text); input = TextFieldValue("") }) {
-                Text(stringResource(Res.string.send))
+                Text(t.send)
             }
         }
     }
@@ -159,16 +140,17 @@ fun SettingsBar(
     onTheme: (String) -> Unit,
     onLang: (String) -> Unit,
 ) {
+    val t = L10n.strings(L10n_Current.lang)
     Row(
         Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        DropdownMenuButton(label = stringResource(Res.string.model), options = models, onSelect = onSwitchModel)
+        DropdownMenuButton(label = t.model, options = models, onSelect = onSwitchModel)
         Spacer(Modifier.width(8.dp))
-        DropdownMenuButton(label = stringResource(Res.string.preset), options = presets, onSelect = onSetPreset)
+        DropdownMenuButton(label = t.preset, options = presets, onSelect = onSetPreset)
         Spacer(Modifier.weight(1f))
-        IconButton(onClick = onInterrupt) { Text(stringResource(Res.string.stop)) }
-        IconButton(onClick = onCompact) { Text(stringResource(Res.string.compact)) }
+        IconButton(onClick = onInterrupt) { Text(t.stop) }
+        IconButton(onClick = onCompact) { Text(t.compact) }
         IconButton(onClick = { onTheme("light") }) { Text("☀") }
         IconButton(onClick = { onTheme("dark") }) { Text("🌙") }
         DropdownMenuButton(label = store.lang, options = listOf("zh", "en"), onSelect = onLang)
@@ -241,6 +223,7 @@ fun WideShell(
     onTheme: (String) -> Unit,
     onLang: (String) -> Unit,
 ) {
+    val t = L10n.strings(L10n_Current.lang)
     Row(Modifier.fillMaxSize()) {
         Box(Modifier.width(sessionPanelWidth(600))) {
             SessionList(store.sessions, store.activeId, onSelect, onCreate, onRename, onDelete)
@@ -248,7 +231,7 @@ fun WideShell(
         VerticalDivider()
         Box(Modifier.weight(1f)) {
             if (store.activeId.isEmpty()) {
-                Column(Modifier.padding(16.dp)) { Text(stringResource(Res.string.selectOrCreate)) }
+                Column(Modifier.padding(16.dp)) { Text(L10n.strings(L10n_Current.lang).selectOrCreate) }
             } else {
                 Column(Modifier.fillMaxSize()) {
                     SettingsBar(store, models, presets, onSwitchModel, onSetPreset, onInterrupt, onCompact, onTheme, onLang)
