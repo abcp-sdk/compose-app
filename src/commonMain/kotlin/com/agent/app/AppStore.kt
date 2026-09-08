@@ -18,6 +18,32 @@ class AppStore(private val port: AgentPort, private val scope: CoroutineScope) {
 
     var theme by mutableStateOf("system")
     var compact by mutableStateOf(false)
+    var lang by mutableStateOf("zh")
+
+    // ---- tool handlers (mirror webui/flutter): keep tool parts on messages ----
+    fun ensureTool(id: String, name: String) {
+        ensureStreaming()
+        val last = messages.last()
+        val existing = last.tools.any { it.id == id }
+        if (existing) return
+        val updated = last.copy(tools = last.tools + ToolDisplay(id, name, ""))
+        messages = messages.dropLast(1) + updated
+    }
+
+    fun toolResult(id: String, output: String) {
+        for (i in messages.indices.reversed()) {
+            val m = messages[i]
+            val idx = m.tools.indexOfFirst { it.id == id }
+            if (idx >= 0) {
+                val tools = m.tools.toMutableList()
+                tools[idx] = tools[idx].copy(output = output)
+                messages = messages.toMutableList().also {
+                    it[i] = m.copy(tools = tools)
+                }
+                return
+            }
+        }
+    }
 
     suspend fun init() {
         refresh()
@@ -45,9 +71,9 @@ class AppStore(private val port: AgentPort, private val scope: CoroutineScope) {
                 when (val e = toAgentEvent(ev)) {
                     is AgentEvent.TextDelta -> appendDelta(e.id, e.text, false)
                     is AgentEvent.ReasoningDelta -> appendDelta(e.id, e.text, true)
-                    is AgentEvent.ToolCall -> {}
-                    is AgentEvent.ToolResult -> {}
-                    is AgentEvent.ToolError -> {}
+                    is AgentEvent.ToolCall -> ensureTool(e.id, e.name)
+                    is AgentEvent.ToolResult -> toolResult(e.id, e.output)
+                    is AgentEvent.ToolError -> toolResult(e.id, e.output)
                     AgentEvent.TurnComplete -> finishStream()
                     is AgentEvent.Status -> if (e.type == "busy") sending = true else finishStream()
                     is AgentEvent.Error -> finishStream()
@@ -107,4 +133,6 @@ class AppStore(private val port: AgentPort, private val scope: CoroutineScope) {
     suspend fun setPreset(p: String) = port.setPreset(activeId, p)
     suspend fun interrupt() = port.interrupt(activeId)
     suspend fun compact() = port.compact(activeId)
+    suspend fun listModels(): List<String> = port.listModels()
+    suspend fun listPresets(): List<String> = port.listPresets()
 }

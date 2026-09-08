@@ -35,18 +35,32 @@ fun sessionPanelWidth(listWidthPx: Int): Dp =
 @Composable
 fun ResponsiveShell(
     store: AppStore,
+    models: List<String>,
+    presets: List<String>,
     onSelect: (String) -> Unit,
     onCreate: () -> Unit,
     onRename: (String) -> Unit,
     onDelete: (String) -> Unit,
     onSend: (String) -> Unit,
+    onSwitchModel: (String) -> Unit,
+    onSetPreset: (String) -> Unit,
+    onInterrupt: () -> Unit,
+    onCompact: () -> Unit,
+    onTheme: (String) -> Unit,
+    onLang: (String) -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val bp = breakpointOf(maxWidth.value.toInt())
         store.compact = bp == Breakpoint.compact
         when (bp) {
-            Breakpoint.compact -> CompactShell(store, onSelect, onCreate, onRename, onDelete, onSend)
-            else -> WideShell(store, onSelect, onCreate, onRename, onDelete, onSend)
+            Breakpoint.compact -> CompactShell(
+                store, models, presets, onSelect, onCreate, onRename, onDelete, onSend,
+                onSwitchModel, onSetPreset, onInterrupt, onCompact, onTheme, onLang,
+            )
+            else -> WideShell(
+                store, models, presets, onSelect, onCreate, onRename, onDelete, onSend,
+                onSwitchModel, onSetPreset, onInterrupt, onCompact, onTheme, onLang,
+            )
         }
     }
 }
